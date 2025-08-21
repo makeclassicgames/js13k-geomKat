@@ -1,5 +1,8 @@
 import { Sprite, keyPressed } from "./kontra.min.mjs";
 
+
+const INITIAL_JUMP_FORCE = 10;
+const GRAVITY = 1;
 export class Player {
     sprite;
     isJumping=false;
@@ -14,17 +17,37 @@ export class Player {
     });
   }
 
-  update(tilePosition){
-     if(this.sprite.y > 368){
-        this.sprite.y = 368;
-        this.isJumping = false;
-        this.sprite.dy = 0;
-    }else{
-        this.sprite.dy=2;
+  getPosition(){
+    return {
+      x: this.sprite.x,
+      y: this.sprite.y
+    };
+  }
+
+  update(){
+
+
+    // Apply gravity if jumping
+    if (this.isJumping) {
+      this.sprite.dy += GRAVITY;
+    } else {
+      this.sprite.dy = 0;
     }
-    if(keyPressed('space') && !this.isJumping){
-        this.sprite.y -= 25;
-        this.isJumping = true;
+
+    // Jump when space is pressed and not already jumping
+    if (keyPressed('space') && !this.isJumping) {
+      this.sprite.dy = -INITIAL_JUMP_FORCE;
+      this.isJumping = true;
+    }
+
+    // Update position
+    this.sprite.y += this.sprite.dy;
+
+    // Ground collision
+    if (this.sprite.y >= 368) {
+      this.sprite.y = 368;
+      this.isJumping = false;
+      this.sprite.dy = 0;
     }
    
     this.sprite.update();

@@ -63,12 +63,6 @@ let loop = GameLoop({  // create the main game loop
         let level = levelsManager.getLevel(game.currentLevel);
         if (level) {
             level.sx++;
-            if (level.sx >= level.width * level.tilewidth) {
-
-                level.sx = 0;
-
-            }
-
         }
         game.player.update(); // update the player
 
