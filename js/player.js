@@ -1,37 +1,44 @@
 import { Sprite, keyPressed } from "./kontra.min.mjs";
+import { levelsManager, LevelsManager } from "./levelData.js";
 
 
-const INITIAL_JUMP_FORCE = 10;
-const GRAVITY = 1;
+const INITIAL_JUMP_FORCE = 16;
+const GRAVITY = 2;
 export class Player {
-    sprite;
-    isJumping=false;
-  constructor(x,y) {
+  sprite;
+  isJumping = false;
+  constructor(x, y) {
 
     this.sprite = Sprite({
       x: x,
       y: y,
       color: 'blue',
       width: 16,
-      height: 16
+      height: 16,
+      anchor: {x: 1, y: 2},
     });
   }
 
-  getPosition(){
-    return {
-      x: this.sprite.x,
-      y: this.sprite.y
-    };
+  getPosition() {
+    return this.sprite.position; // Returns the current position of the player sprite
   }
 
-  update(){
+  setPosition(x, y) {
+    this.sprite.x = x;
+    this.sprite.y = y;
+  }
 
+  update(levelIndex) {
 
-    // Apply gravity if jumping
-    if (this.isJumping) {
-      this.sprite.dy += GRAVITY;
-    } else {
-      this.sprite.dy = 0;
+    this.sprite.dy += GRAVITY;
+    const collides = levelsManager.getColliderPosition(levelIndex,this.sprite);
+     // Ground collision
+    if (collides) {
+
+        this.sprite.dy = 0;
+     
+      this.isJumping = false;
+     
     }
 
     // Jump when space is pressed and not already jumping
@@ -40,16 +47,10 @@ export class Player {
       this.isJumping = true;
     }
 
+    
+   
     // Update position
     this.sprite.y += this.sprite.dy;
-
-    // Ground collision
-    if (this.sprite.y >= 368) {
-      this.sprite.y = 368;
-      this.isJumping = false;
-      this.sprite.dy = 0;
-    }
-   
     this.sprite.update();
   }
 

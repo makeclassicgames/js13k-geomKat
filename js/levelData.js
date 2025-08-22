@@ -27,9 +27,21 @@ export class LevelsManager {
     getLevelPositionTile(levelIndex, x, y) {
         const level = this.getLevel(levelIndex);
         if (!level) {
-            throw new Error("Level not found");
+            //throw new Error("Level not found");
+            return null;
         }
-        return level.getTile(x / level.tileWidth, y / level.tileHeight);
+        let data = {x: x , y: y };
+        
+        return level.tileAtLayer('ground', data);
+    }
+    getColliderPosition(levelIndex,sprite){
+        const level = this.getLevel(levelIndex);
+        if (!level) {
+            //throw new Error("Level not found");
+            return null;
+        }
+        
+        return level.layerCollidesWith('ground', sprite);
     }
 };
 

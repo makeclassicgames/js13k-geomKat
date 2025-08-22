@@ -5,7 +5,8 @@ import { Player } from './player.js';
 
 import { levelsManager, LevelsManager } from './levelData.js';
 
-import levels from './level1.json' with {type: 'json'};
+import level1 from './level1.json' with {type: 'json'};
+import level2 from './level2.json' with {type: 'json'};
 
 let { canvas } = init();
 
@@ -18,7 +19,7 @@ const states = {
 const game = {
     currentLevel: 0,
     state: states.menu,
-    player: new Player(100, 100)
+    player: new Player(75, 100)
 };
 
 
@@ -34,7 +35,7 @@ img.onload = function () {
 
         // map size in tiles
         width: 64,
-        height: 32,
+        height: 30,
 
         // tileset object
         tilesets: [{
@@ -45,7 +46,7 @@ img.onload = function () {
         // layer object
         layers: [{
             name: 'ground',
-            data: levels.layers[0].data
+            data: level1.layers[0].data
         }]
     });
 
@@ -62,9 +63,20 @@ let loop = GameLoop({  // create the main game loop
 
         let level = levelsManager.getLevel(game.currentLevel);
         if (level) {
-            level.sx++;
+            let playerPosition = game.player.getPosition();
+
+            if (playerPosition.x > (canvas.width / 2) - 16) {
+
+                level.sx++;
+
+            } else {
+                game.player.setPosition(playerPosition.x + 1, playerPosition.y);
+            }
+            let collides = levelsManager.getColliderPosition(game.currentLevel, game.player.sprite);
+            game.player.update(game.currentLevel); // update the player
         }
-        game.player.update(); // update the player
+
+
 
     },
     render: function () { // render the game state
