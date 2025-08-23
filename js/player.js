@@ -1,21 +1,21 @@
 import { Sprite, keyPressed } from "./kontra.min.mjs";
 import { levelsManager, LevelsManager } from "./levelData.js";
 
-
-const INITIAL_JUMP_FORCE = 16;
-const GRAVITY = 2;
+const INITIAL_JUMP_FORCE = 4;
+const GRAVITY = 3;
+const MAX_X_VELOCITY = 0.5;
 export class Player {
   sprite;
   isJumping = false;
+  firstGround = false;
   constructor(x, y) {
-
     this.sprite = Sprite({
       x: x,
       y: y,
-      color: 'blue',
+      color: "blue",
       width: 16,
       height: 16,
-      anchor: {x: 1, y: 2},
+      anchor: { x: 1, y: 2 },
     });
   }
 
@@ -28,29 +28,34 @@ export class Player {
     this.sprite.y = y;
   }
 
-  update(levelIndex) {
+  // Using dt (delta time) in physics calculations because of colliding issues
+  update(dt, levelIndex) {
+    const isColliding = levelsManager.layerCollidesWith(levelIndex, this.sprite);
+    const tileEngine = levelsManager.getLevel(levelIndex);
 
-    this.sprite.dy += GRAVITY;
-    const collides = levelsManager.getColliderPosition(levelIndex,this.sprite);
-     // Ground collision
-    if (collides) {
+    // Move camera along with the player
+    tileEngine.sx += this.sprite.dx;
 
-        this.sprite.dy = 0;
-     
+    // Ground collision
+    if (isColliding) {
+      this.sprite.dy = 0;
+
       this.isJumping = false;
-     
+
+      // Move the player when is grounded
+      this.horizontalMovement(dt);
+    } else {
+      this.sprite.dy += GRAVITY * dt;
     }
 
     // Jump when space is pressed and not already jumping
-    if (keyPressed('space') && !this.isJumping) {
-      this.sprite.dy = -INITIAL_JUMP_FORCE;
+    if (keyPressed("space") && !this.isJumping) {
+      this.sprite.dy -= INITIAL_JUMP_FORCE;
+
       this.isJumping = true;
     }
 
-    
-   
     // Update position
-    this.sprite.y += this.sprite.dy;
     this.sprite.update();
   }
 
@@ -58,4 +63,8 @@ export class Player {
     this.sprite.render();
   }
 
+  horizontalMovement(dt) {
+    this.sprite.dx += 1 * dt;
+    if (this.sprite.dx >= MAX_X_VELOCITY) this.sprite.dx = MAX_X_VELOCITY;
+  }
 }
