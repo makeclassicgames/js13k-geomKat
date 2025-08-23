@@ -15,7 +15,6 @@ export class Player {
       color: "blue",
       width: 16,
       height: 16,
-      anchor: { x: 1, y: 2 },
     });
   }
 
@@ -30,7 +29,10 @@ export class Player {
 
   // Using dt (delta time) in physics calculations because of colliding issues
   update(dt, levelIndex) {
-    const isColliding = levelsManager.layerCollidesWith(levelIndex, this.sprite);
+    const isColliding = levelsManager.layerCollidesWith(
+      levelIndex,
+      this.sprite
+    );
     const tileEngine = levelsManager.getLevel(levelIndex);
 
     // Move camera along with the player
