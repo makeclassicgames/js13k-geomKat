@@ -34,7 +34,7 @@ export class LevelsManager {
         
         return level.tileAtLayer('ground', data);
     }
-    getColliderPosition(levelIndex,sprite){
+    layerCollidesWith(levelIndex,sprite){
         const level = this.getLevel(levelIndex);
         if (!level) {
             //throw new Error("Level not found");
