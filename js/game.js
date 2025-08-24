@@ -22,9 +22,6 @@ const game = {
     player: new Player(75, 100)
 };
 
-
-
-
 let img = new Image();
 img.src = 'assets/tilescat.png';
 img.onload = function () {
@@ -53,31 +50,15 @@ img.onload = function () {
     levelsManager.addLevel(tileEngine);
 };
 
-
-
-
-
 initKeys(); // initialize the keyboard input
 let loop = GameLoop({  // create the main game loop
-    update: function () { // update the game state
+    update: function (dt) { // update the game state
 
-        let level = levelsManager.getLevel(game.currentLevel);
-        if (level) {
-            let playerPosition = game.player.getPosition();
+        const level = levelsManager.getLevel(game.currentLevel);
+        
+        if (!level) return
 
-            if (playerPosition.x > (canvas.width / 2) - 16) {
-
-                level.sx++;
-
-            } else {
-                game.player.setPosition(playerPosition.x + 1, playerPosition.y);
-            }
-            let collides = levelsManager.getColliderPosition(game.currentLevel, game.player.sprite);
-            game.player.update(game.currentLevel); // update the player
-        }
-
-
-
+        game.player.update(dt, game.currentLevel); // update the player
     },
     render: function () { // render the game state
         let level = levelsManager.getLevel(game.currentLevel);
