@@ -46,7 +46,7 @@ img.onload = function () {
             data: level1.layers[0].data
         }]
     });
-
+    tileEngine.add(game.player.sprite);
     levelsManager.addLevel(tileEngine);
 };
 
@@ -65,7 +65,7 @@ let loop = GameLoop({  // create the main game loop
         if (level) {
             level.render();
         }
-        game.player.render();
+       // game.player.render();
     }
 });
 

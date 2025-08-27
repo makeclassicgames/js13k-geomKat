@@ -1,5 +1,5 @@
 import { Sprite, keyPressed } from "./kontra.min.mjs";
-import { levelsManager, LevelsManager } from "./levelData.js";
+import { levelsManager } from "./levelData.js";
 
 const INITIAL_JUMP_FORCE = 4;
 const GRAVITY = 3;
@@ -38,10 +38,12 @@ export class Player {
     // Move camera along with the player
     tileEngine.sx += this.sprite.dx;
 
+
     // Ground collision
     if (isColliding) {
       this.sprite.dy = 0;
-
+      const currentTile = tileEngine.tileAtLayer("ground", {x: this.sprite.x, y: this.sprite.y + this.sprite.height});
+      console.log(currentTile);
       this.isJumping = false;
 
       // Move the player when is grounded
