@@ -1,5 +1,5 @@
 // game.js
-import { init, Sprite, TileEngine, initKeys, keyPressed, GameLoop } from './kontra.min.mjs';
+import { init, Text, TileEngine, initKeys, keyPressed, GameLoop } from './kontra.min.mjs';
 
 import { Player } from './player.js';
 
@@ -18,7 +18,16 @@ const states = {
 
 const game = {
     currentLevel: 0,
-    state: states.menu,
+    state: states.playing,
+    text: Text({
+        text: 'Game Over\nPress Space to Start Again',
+        font: '32px Arial',
+        color: 'black',
+        x: 350,
+        y: 100,
+        anchor: { x: 0.5, y: 0.5 },
+        textAlign: 'center'
+    }),
     player: new Player(75, 100)
 };
 
@@ -55,17 +64,32 @@ let loop = GameLoop({  // create the main game loop
     update: function (dt) { // update the game state
 
         const level = levelsManager.getLevel(game.currentLevel);
-        
-        if (!level) return
 
-        game.player.update(dt, game.currentLevel); // update the player
+        if (!level) return
+        if( keyPressed('space')){
+            if (game.state === states.gameOver) {
+                game.state = states.playing;
+                game.player.setPosition(75,100);
+                level.sx = 0;
+            }
+        }
+       
+        if(game.player.sprite.y > canvas.height){
+            game.state = states.gameOver;
+        }else{
+             game.player.update(dt, game.currentLevel); // update the player
+        }
+       
     },
     render: function () { // render the game state
         let level = levelsManager.getLevel(game.currentLevel);
         if (level) {
             level.render();
         }
-       // game.player.render();
+        if (game.state === states.gameOver) {
+            game.text.render();
+        }
+        
     }
 });
 
