@@ -21,14 +21,14 @@ const game = {
     state: states.playing,
     text: Text({
         text: 'Game Over\nPress Space to Start Again',
-        font: '32px Arial',
+        font: '32px Roboto',
         color: 'black',
         x: 350,
         y: 100,
         anchor: { x: 0.5, y: 0.5 },
         textAlign: 'center'
     }),
-    player: new Player(75, 100)
+    player: new Player(65, 75)
 };
 
 let img = new Image();
@@ -51,9 +51,14 @@ img.onload = function () {
 
         // layer object
         layers: [{
-            name: 'ground',
+            name: 'background',
             data: level1.layers[0].data
-        }]
+        },
+        {
+            name: 'ground',
+            data: level1.layers[1].data
+        }
+        ]
     });
     tileEngine.add(game.player.sprite);
     levelsManager.addLevel(tileEngine);
@@ -66,20 +71,28 @@ let loop = GameLoop({  // create the main game loop
         const level = levelsManager.getLevel(game.currentLevel);
 
         if (!level) return
-        if( keyPressed('space')){
+        if (keyPressed('space')) {
             if (game.state === states.gameOver) {
                 game.state = states.playing;
-                game.player.setPosition(75,100);
+                game.player.setPosition(75, 100);
                 level.sx = 0;
             }
         }
-       
-        if(game.player.sprite.y > canvas.height){
+
+
+
+        if (game.player.sprite.y > canvas.height) {
             game.state = states.gameOver;
-        }else{
-             game.player.update(dt, game.currentLevel); // update the player
+        } else {
+            if (game.state === states.playing) {
+                game.player.update(dt, game.currentLevel); // update the player
+            }
+            if (game.player.getCurrentTile(game.currentLevel) == 3) {
+                game.state = states.gameOver;
+                return;
+            } 
         }
-       
+
     },
     render: function () { // render the game state
         let level = levelsManager.getLevel(game.currentLevel);
@@ -89,7 +102,7 @@ let loop = GameLoop({  // create the main game loop
         if (game.state === states.gameOver) {
             game.text.render();
         }
-        
+
     }
 });
 
