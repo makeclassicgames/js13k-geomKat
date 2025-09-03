@@ -1,21 +1,46 @@
-import { Sprite, keyPressed } from "./kontra.min.mjs";
+import { Sprite, keyPressed,gamepadPressed, SpriteSheet } from "./kontra.min.mjs";
 import { levelsManager } from "./levelData.js";
 
 const INITIAL_JUMP_FORCE = 3;
 const GRAVITY = 3;
-const MAX_X_VELOCITY = 1;
+const MAX_X_VELOCITY = 2.5;
 export class Player {
   sprite;
   isJumping = false;
   firstGround = false;
   constructor(x, y) {
-    this.sprite = Sprite({
-      x: x,
-      y: y,
-      color: "blue",
-      width: 16,
-      height: 16,
-    });
+    let img = new Image();
+    img.src = "assets/player_sheet.png";
+    img.onload = () => {
+      let imgSheet = SpriteSheet({
+        image: img,
+        frameWidth: 16,
+        frameHeight: 16,
+        animations: {
+        walk:{
+          frames:'1',
+          frameRate: 10,
+        },
+        death:{
+          frames:'0',
+          frameRate: 10,
+        },
+        jump:{
+          frames:'2',
+          frameRate: 10,
+        }
+      }});
+
+      this.sprite = Sprite({
+        x: x,
+        y: y,
+        width: 16,
+        height: 16,
+        animations: imgSheet.animations,
+      });
+      this.sprite.playAnimation('walk');
+    };
+
   }
 
   getPosition() {
@@ -33,7 +58,12 @@ export class Player {
 
   getCurrentTile(levelIndex) {
     const tileEngine = levelsManager.getLevel(levelIndex);
-    return tileEngine.tileAtLayer("ground", {x: this.sprite.x, y: this.sprite.y + this.sprite.height});
+    return tileEngine.tileAtLayer("ground", { x: this.sprite.x, y: this.sprite.y + this.sprite.height });
+  }
+
+  getNextTile(levelIndex) {
+    const tileEngine = levelsManager.getLevel(levelIndex);
+    return tileEngine.tileAtLayer("ground", { x: this.sprite.x + this.sprite.width, y: this.sprite.y });
   }
 
   // Using dt (delta time) in physics calculations because of colliding issues
@@ -51,7 +81,7 @@ export class Player {
     // Ground collision
     if (isColliding) {
       this.sprite.dy = 0;
-      const currentTile = tileEngine.tileAtLayer("ground", {x: this.sprite.x, y: this.sprite.y + this.sprite.height});
+      const currentTile = tileEngine.tileAtLayer("ground", { x: this.sprite.x, y: this.sprite.y + this.sprite.height });
       console.log(currentTile);
       this.isJumping = false;
       this.sprite.drotation = 0;
@@ -63,11 +93,13 @@ export class Player {
     }
 
     // Jump when space is pressed and not already jumping
-    if (keyPressed("space") && !this.isJumping) {
+    if ((keyPressed("space") || gamepadPressed('south')) && !this.isJumping) {
       this.sprite.dy -= INITIAL_JUMP_FORCE;
-      this.sprite.drotation = (-Math.PI / 4)*dt;
-
+      this.sprite.drotation = (-Math.PI / 4) * dt;
+      this.sprite.playAnimation('jump');
       this.isJumping = true;
+    }else{
+      this.sprite.playAnimation('walk');
     }
 
     // Update position

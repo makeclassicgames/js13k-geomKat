@@ -1,5 +1,5 @@
 // game.js
-import { init, Text, TileEngine, initKeys, keyPressed, GameLoop } from './kontra.min.mjs';
+import { init, Text, TileEngine, initKeys, keyPressed, GameLoop, initGamepad, gamepadPressed } from './kontra.min.mjs';
 
 import { Player } from './player.js';
 
@@ -40,7 +40,7 @@ img.onload = function () {
         tileheight: 16,
 
         // map size in tiles
-        width: 64,
+        width: 128,
         height: 30,
 
         // tileset object
@@ -65,16 +65,18 @@ img.onload = function () {
 };
 
 initKeys(); // initialize the keyboard input
+initGamepad();
 let loop = GameLoop({  // create the main game loop
     update: function (dt) { // update the game state
 
         const level = levelsManager.getLevel(game.currentLevel);
 
         if (!level) return
-        if (keyPressed('space')) {
+        if (keyPressed('space') || gamepadPressed('south')) {
             if (game.state === states.gameOver) {
                 game.state = states.playing;
                 game.player.setPosition(75, 100);
+                game.player.isJumping = true;
                 level.sx = 0;
             }
         }
@@ -83,14 +85,28 @@ let loop = GameLoop({  // create the main game loop
 
         if (game.player.sprite.y > canvas.height) {
             game.state = states.gameOver;
+            game.player.sprite.playAnimation('death');
+            game.player.sprite.rotation = 0;
         } else {
             if (game.state === states.playing) {
                 game.player.update(dt, game.currentLevel); // update the player
+                if (game.player.getCurrentTile(game.currentLevel) == 3) {
+                    game.state = states.gameOver;
+                    game.player.sprite.playAnimation('death');
+                    game.player.sprite.rotation = -Math.PI/4;
+                    return;
+                }
+
+                if (game.player.getNextTile(game.currentLevel) == 3) {
+                    game.state = states.gameOver;
+                    game.player.sprite.playAnimation('death');
+                    game.player.sprite.rotation = -Math.PI/4;
+                    return;
+                }
             }
-            if (game.player.getCurrentTile(game.currentLevel) == 3) {
-                game.state = states.gameOver;
-                return;
-            } 
+
+
+
         }
 
     },
