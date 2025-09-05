@@ -1,5 +1,6 @@
 import { Sprite, keyPressed,gamepadPressed, SpriteSheet } from "./kontra.min.mjs";
 import { levelsManager } from "./levelData.js";
+import { zzfx} from './zzfx.js';
 
 const INITIAL_JUMP_FORCE = 3;
 const GRAVITY = 3;
@@ -98,6 +99,7 @@ export class Player {
       this.sprite.drotation = (-Math.PI / 4) * dt;
       this.sprite.playAnimation('jump');
       this.isJumping = true;
+      zzfx(...[,.1,496,.08,.04,.05,,2.1,,111,100,.01,,,,,,.9,.02]);
     }else{
       this.sprite.playAnimation('walk');
     }
