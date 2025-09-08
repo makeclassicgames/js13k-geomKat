@@ -3,7 +3,8 @@ import { TileEngineClass } from "./kontra.min.mjs";
 export const TilesCategory={
     EMPTY:1,
     GROUND: 2,
-    SPIKES: 3
+    SPIKES: 3,
+    SPIKES2: 4
 };
 
 

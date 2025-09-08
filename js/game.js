@@ -159,6 +159,7 @@ let loop = GameLoop({  // create the main game loop
                 game.state = states.playing;
                 game.player.setPosition(75, 100);
                 game.player.isJumping = true;
+                game.text.text = 'Game Over\nPress Space to Start Again';
                 level.sx = 0;
             }
         }
@@ -175,13 +176,14 @@ let loop = GameLoop({  // create the main game loop
             game.death();
         } else {
             if (game.state === states.playing) {
+                
                 game.player.update(dt, game.currentLevel); // update the player
-                if (game.player.getCurrentTile(game.currentLevel) == TilesCategory.SPIKES) {
+                if (game.player.getCurrentTile(game.currentLevel) == TilesCategory.SPIKES || game.player.getCurrentTile(game.currentLevel) == TilesCategory.SPIKES2) {
                     game.death();
                     return;
                 }
 
-                if (game.player.getNextTile(game.currentLevel) == TilesCategory.SPIKES) {
+                if (game.player.getNextTile(game.currentLevel) == TilesCategory.SPIKES || game.player.getNextTile(game.currentLevel) == TilesCategory.SPIKES2) {
                     game.death();
                     return;
                 }

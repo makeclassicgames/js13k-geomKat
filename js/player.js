@@ -1,5 +1,5 @@
 import { Sprite, keyPressed,gamepadPressed, SpriteSheet } from "./kontra.min.mjs";
-import { levelsManager } from "./levelData.js";
+import { levelsManager, TilesCategory } from "./levelData.js";
 import { zzfx} from './zzfx.js';
 
 const INITIAL_JUMP_FORCE = 3;
@@ -37,6 +37,7 @@ export class Player {
         y: y,
         width: 16,
         height: 16,
+        anchor: { x: 1, y: 0 },
         animations: imgSheet.animations,
       });
       this.sprite.playAnimation('walk');
@@ -64,7 +65,7 @@ export class Player {
 
   getNextTile(levelIndex) {
     const tileEngine = levelsManager.getLevel(levelIndex);
-    return tileEngine.tileAtLayer("ground", { x: this.sprite.x + this.sprite.width, y: this.sprite.y });
+    return tileEngine.tileAtLayer("ground", { x: this.sprite.x + this.sprite.width/2, y: this.sprite.y+ (this.sprite.height/2) });
   }
 
   // Using dt (delta time) in physics calculations because of colliding issues
@@ -88,7 +89,9 @@ export class Player {
       this.sprite.drotation = 0;
       this.sprite.rotation = 0;
       // Move the player when is grounded
-      this.horizontalMovement(dt);
+     
+      this.horizontalMovement(dt,levelIndex);
+      
     } else {
       this.sprite.dy += GRAVITY * dt;
     }
@@ -112,8 +115,13 @@ export class Player {
     this.sprite.render();
   }
 
-  horizontalMovement(dt) {
+  horizontalMovement(dt, levelIndex) {
+    if(this.getNextTile(levelIndex)===TilesCategory.GROUND){
+      this.sprite.dx = 0;
+      return;
+    }
     this.sprite.dx += 1 * dt;
     if (this.sprite.dx >= MAX_X_VELOCITY) this.sprite.dx = MAX_X_VELOCITY;
+
   }
 }
