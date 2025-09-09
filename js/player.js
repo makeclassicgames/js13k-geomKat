@@ -9,6 +9,7 @@ export class Player {
   sprite;
   isJumping = false;
   firstGround = false;
+  score = 0;
   constructor(x, y) {
     let img = new Image();
     img.src = "assets/player_sheet.png";
@@ -60,12 +61,23 @@ export class Player {
 
   getCurrentTile(levelIndex) {
     const tileEngine = levelsManager.getLevel(levelIndex);
-    return tileEngine.tileAtLayer("ground", { x: this.sprite.x, y: this.sprite.y + this.sprite.height });
+    return tileEngine.tileAtLayer("ground", { x: (this.sprite.x), y: this.sprite.y + this.sprite.height });
   }
 
   getNextTile(levelIndex) {
     const tileEngine = levelsManager.getLevel(levelIndex);
-    return tileEngine.tileAtLayer("ground", { x: this.sprite.x + this.sprite.width/2, y: this.sprite.y+ (this.sprite.height/2) });
+    return tileEngine.tileAtLayer("ground", { x: this.sprite.x + this.sprite.width, y: this.sprite.y + (this.sprite.height / 2) });
+  }
+
+  addScore(points) {
+    this.score += points;
+  }
+
+  resetPlayer(){
+    this.setPosition(75, 100);
+    this.isJumping = true;
+    this.sprite.dx=0;
+    this.sprite.rotation=0;
   }
 
   // Using dt (delta time) in physics calculations because of colliding issues
@@ -73,7 +85,9 @@ export class Player {
     const isColliding = levelsManager.layerCollidesWith(
       levelIndex,
       this.sprite
-    );
+    ) && this.getCurrentTile(levelIndex) === TilesCategory.GROUND;
+
+    console.log(this.getCurrentTile(levelIndex))
     const tileEngine = levelsManager.getLevel(levelIndex);
 
     // Move camera along with the player
@@ -83,8 +97,7 @@ export class Player {
     // Ground collision
     if (isColliding) {
       this.sprite.dy = 0;
-      const currentTile = tileEngine.tileAtLayer("ground", { x: this.sprite.x, y: this.sprite.y + this.sprite.height });
-      console.log(currentTile);
+    
       this.isJumping = false;
       this.sprite.drotation = 0;
       this.sprite.rotation = 0;

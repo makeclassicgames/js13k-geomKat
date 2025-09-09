@@ -7,6 +7,7 @@ import { levelsManager, TilesCategory, LevelsManager } from './levelData.js';
 
 import level1 from './level1.json' with {type: 'json'};
 import level2 from './level2.json' with {type: 'json'};
+import level3 from './level3.json' with {type: 'json'};
 
 import { zzfx } from './zzfx.js';
 
@@ -16,7 +17,8 @@ const states = {
     menu: 0,
     playing: 1,
     gameOver: 2,
-    win: 3
+    win: 3,
+    final: 4
 };
 
 const game = {
@@ -49,6 +51,15 @@ const game = {
         anchor: { x: 0.5, y: 0.5 },
         textAlign: 'center'
     }),
+    levelText: Text({
+        text: 'Level: 1',
+        font: '14px fantasy',
+        color: 'black',
+        x: 325,
+        y: 20,
+        anchor: { x: 0.5, y: 0.5 },
+        textAlign: 'center'
+    }),
     finalScoreText: Text({
         text: '',
         font: '32px fantasy',
@@ -65,10 +76,7 @@ const game = {
         zzfx(...[, , 20, .02, .02, .01, 2, .8, , -19, -29, .06, , , 73, , , .88, .02, .05]);
         game.player.sprite.rotation = -Math.PI / 4;
     },
-    win: function () {
-        game.currentLevel++;
 
-    }
 };
 
 let img = new Image();
@@ -126,10 +134,38 @@ img.onload = function () {
         }
         ]
     });
+    let tileEngine3 = TileEngine({
+        // tile size
+        tilewidth: 16,
+        tileheight: 16,
+
+        // map size in tiles
+        width: 128,
+        height: 30,
+
+        // tileset object
+        tilesets: [{
+            firstgid: 1,
+            image: img
+        }],
+
+        // layer object
+        layers: [{
+            name: 'background',
+            data: level3.layers[0].data
+        },
+        {
+            name: 'ground',
+            data: level3.layers[1].data
+        }
+        ]
+    });
     tileEngine.add(game.player.sprite);
     tileEngine2.add(game.player.sprite);
+    tileEngine3.add(game.player.sprite);
     levelsManager.addLevel(tileEngine2);
     levelsManager.addLevel(tileEngine);
+    levelsManager.addLevel(tileEngine3);
 };
 
 initKeys(); // initialize the keyboard input
@@ -143,22 +179,29 @@ let loop = GameLoop({  // create the main game loop
         if (keyPressed('space') || gamepadPressed('south')) {
             if (game.state === states.gameOver) {
                 game.state = states.playing;
-                game.player.setPosition(75, 100);
-                game.player.isJumping = true;
+                game.player.resetPlayer();
                 level.sx = 0;
             }
             if (game.state === states.menu) {
                 game.state = states.playing;
-                game.player.setPosition(75, 100);
-                game.player.isJumping = true;
+                game.player.resetPlayer();
                 level.sx = 0;
             }
             if (game.state === states.win) {
                 game.currentLevel++;
+                game.levelText.text = `Level: ${game.currentLevel + 1}`;
                 level = levelsManager.getLevel(game.currentLevel);
                 game.state = states.playing;
-                game.player.setPosition(75, 100);
-                game.player.isJumping = true;
+                game.player.resetPlayer();
+                game.text.text = 'Game Over\nPress Space to Start Again';
+                level.sx = 0;
+            }
+            if (game.state === states.final) {
+                game.currentLevel = 0;
+                game.levelText.text = `Level: ${game.currentLevel + 1}`;
+                level = levelsManager.getLevel(game.currentLevel);
+                game.state = states.playing;
+                game.player.resetPlayer();
                 game.text.text = 'Game Over\nPress Space to Start Again';
                 level.sx = 0;
             }
@@ -167,16 +210,23 @@ let loop = GameLoop({  // create the main game loop
         if (game.player.sprite.x > (level.width * level.tilewidth - 50)
             && game.state == states.playing) {
             game.state = states.win;
-            game.text.text = 'You Win!\nPress Space to Next Level';
+            game.player.addScore(Math.floor(level.sx / 10));
+            if (game.currentLevel >= levelsManager.levels.length - 1) {
+                game.state = states.final;
+                game.text.text = 'Congratulations!\nYou Finished the Game!\nPress Space to Start Again';
+                game.player.score = 0;
+                game.currentLevel = 0;
+            } else {
+                game.text.text = 'You Win!\nPress Space to Next Level';
+            }
+
             return;
         }
 
-
-        if (game.player.sprite.y > canvas.height && game.state == states.playing) {
-            game.death();
-        } else {
-            if (game.state === states.playing) {
-                
+        if (game.state === states.playing) {
+            if (game.player.sprite.y > canvas.height) {
+                game.death();
+            } else {
                 game.player.update(dt, game.currentLevel); // update the player
                 if (game.player.getCurrentTile(game.currentLevel) == TilesCategory.SPIKES || game.player.getCurrentTile(game.currentLevel) == TilesCategory.SPIKES2) {
                     game.death();
@@ -200,21 +250,19 @@ let loop = GameLoop({  // create the main game loop
             if (game.state === states.menu) {
                 game.initText.render();
             }
-            if (game.state === states.gameOver || game.state === states.win) {
+            if (game.state === states.gameOver || game.state === states.win || game.state === states.final) {
                 game.text.render();
-                game.finalScoreText.text = `Final Score: ${Math.floor(level.sx / 10)}`;
+                game.finalScoreText.text = `Final Score: ${game.player.score + Math.floor(level.sx / 10)}`;
                 game.finalScoreText.render();
+                game.player.isJumping = true;
                 return;
             }
-            game.scoreText.text = `Score: ${Math.floor(level.sx / 10)}`;
+            game.scoreText.text = `Score: ${game.player.score + Math.floor(level.sx / 10)}`;
             if (game.state === states.playing) {
                 game.scoreText.render();
+
             }
-            if (game.state === states.win) {
-                game.text.render();
-                game.finalScoreText.text = `Final Score: ${Math.floor(level.sx / 10)}`;
-                game.finalScoreText.render();
-            }
+            game.levelText.render();
         }
 
     }
