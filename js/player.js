@@ -38,7 +38,7 @@ export class Player {
         y: y,
         width: 16,
         height: 16,
-        anchor: { x: 1, y: 0 },
+        anchor: { x: 0.5, y: 0 },
         animations: imgSheet.animations,
       });
       this.sprite.playAnimation('walk');
@@ -61,7 +61,7 @@ export class Player {
 
   getCurrentTile(levelIndex) {
     const tileEngine = levelsManager.getLevel(levelIndex);
-    return tileEngine.tileAtLayer("ground", { x: (this.sprite.x), y: this.sprite.y + this.sprite.height });
+    return tileEngine.tileAtLayer("ground", { x: Math.floor(this.sprite.x + this.sprite.width / 2), y: this.sprite.y + this.sprite.height });
   }
 
   getNextTile(levelIndex) {

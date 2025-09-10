@@ -1,0 +1,27 @@
+{
+  "name": "boingkat",
+  "version": "1.0.0",
+  "main": "rollup.config.js",
+  "scripts": {
+    "build-bundle": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/makeclassicgames/js13k-geomKat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/makeclassicgames/js13k-geomKat/issues"
+  },
+  "homepage": "https://github.com/makeclassicgames/js13k-geomKat#readme",
+  "description": "",
+  "dependencies": {
+    "rollup": "^3.20.2",
+    "@rollup/plugin-json": "^6.1.0",
+    "rollup-plugin-kontra": "^1.0.0",
+    "@rollup/plugin-terser": "^0.4.0",
+    "rollup-plugin-obfuscator": "^0.1.0"
+  }
+  
+}
