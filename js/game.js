@@ -250,9 +250,15 @@ let loop = GameLoop({  // create the main game loop
             if (game.state === states.menu) {
                 game.initText.render();
             }
+            if( game.state === states.gameOver) {
+                game.finalScoreText.text = `Final Score: ${game.player.score + Math.floor(level.sx / 10)}`;
+
+            }else if( game.state === states.win) {
+                game.finalScoreText.text = `Final Score: ${game.player.score}`;
+            }
+            
             if (game.state === states.gameOver || game.state === states.win || game.state === states.final) {
                 game.text.render();
-                game.finalScoreText.text = `Final Score: ${game.player.score + Math.floor(level.sx / 10)}`;
                 game.finalScoreText.render();
                 game.player.isJumping = true;
                 return;
