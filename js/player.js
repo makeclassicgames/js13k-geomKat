@@ -99,7 +99,6 @@ export class Player {
       this.sprite
     ) && this.getCurrentTile(levelIndex) === TilesCategory.GROUND;
 
-    console.log(this.getCurrentTile(levelIndex))
     const tileEngine = levelsManager.getLevel(levelIndex);
 
     // Move camera along with the player
