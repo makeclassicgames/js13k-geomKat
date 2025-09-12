@@ -57,6 +57,7 @@ Here you can find the Technical Informatión about this Game.
 
 * Improved UI (Adding Some CSS and using Better Fonts).
 * Add more Levels and improbe dificulty.
+* Add Mobile Support.
 
 ## Team 🌍
 
