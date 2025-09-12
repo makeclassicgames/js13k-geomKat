@@ -1,10 +1,16 @@
+/*
+  Boing Kat - A simple platformer game made with Kontra.js with Mit License.
+  https://github.com/makeclassicgames/BoingKat
+  levelDataJS - Level management and tile categories
+*/
 import { TileEngineClass } from "./kontra.min.mjs";
 
+//Tile Categories
 export const TilesCategory={
-    EMPTY:1,
-    GROUND: 2,
-    SPIKES: 3,
-    SPIKES2: 4
+    EMPTY:1, //No Tile
+    GROUND: 2,//Ground and Platforms
+    SPIKES: 3,//Spikes
+    SPIKES2: 4//Spikes 2
 };
 
 

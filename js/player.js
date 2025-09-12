@@ -1,10 +1,18 @@
+/*
+  Boing Kat - A simple platformer game made with Kontra.js with Mit License.
+  https://github.com/makeclassicgames/BoingKat
+  PlayerJS - Player class and movement logic
+*/
+
 import { Sprite, keyPressed,gamepadPressed, SpriteSheet } from "./kontra.min.mjs";
 import { levelsManager, TilesCategory } from "./levelData.js";
 import { zzfx} from './zzfx.js';
-
+//Initial jump force and gravity constants
 const INITIAL_JUMP_FORCE = 3;
 const GRAVITY = 3;
 const MAX_X_VELOCITY = 2.5;
+
+// Player class
 export class Player {
   sprite;
   isJumping = false;
@@ -59,20 +67,24 @@ export class Player {
     this.sprite.y = y;
   }
 
+  // Get the tile the player is currently on
   getCurrentTile(levelIndex) {
     const tileEngine = levelsManager.getLevel(levelIndex);
     return tileEngine.tileAtLayer("ground", { x: Math.floor(this.sprite.x + this.sprite.width / 2), y: this.sprite.y + this.sprite.height });
   }
 
+  // Get the tile in front of the player
   getNextTile(levelIndex) {
     const tileEngine = levelsManager.getLevel(levelIndex);
     return tileEngine.tileAtLayer("ground", { x: this.sprite.x + this.sprite.width, y: this.sprite.y + (this.sprite.height / 2) });
   }
 
+  //Add Score to player
   addScore(points) {
     this.score += points;
   }
 
+  //Reset Player State
   resetPlayer(){
     this.setPosition(75, 100);
     this.isJumping = true;

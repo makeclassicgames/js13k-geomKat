@@ -1,9 +1,13 @@
-// game.js
+/*
+  Boing Kat - A simple platformer game made with Kontra.js with Mit License.
+  https://github.com/makeclassicgames/BoingKat
+  GameJS - Main game logic and states
+*/
 import { init, Text, TileEngine, initKeys, keyPressed, GameLoop, initGamepad, gamepadPressed } from './kontra.min.mjs';
 
 import { Player } from './player.js';
 
-import { levelsManager, TilesCategory, LevelsManager } from './levelData.js';
+import { levelsManager, TilesCategory} from './levelData.js';
 
 import level1 from './level1.json' with {type: 'json'};
 import level2 from './level2.json' with {type: 'json'};
@@ -13,6 +17,7 @@ import { zzfx } from './zzfx.js';
 
 let { canvas } = init();
 
+//Game States
 const states = {
     menu: 0,
     playing: 1,
@@ -21,9 +26,11 @@ const states = {
     final: 4
 };
 
+//Game Object
 const game = {
-    currentLevel: 0,
-    state: states.menu,
+    currentLevel: 0, //Current Level Index
+    state: states.menu, //Current State
+    //UI Texts and Player Object
     text: Text({
         text: 'Game Over\nPress Space to Start Again',
         font: '32px fantasy',
@@ -78,7 +85,7 @@ const game = {
     },
 
 };
-
+//Load TileSet and Levels
 let img = new Image();
 img.src = 'assets/tilescat.png';
 img.onload = function () {
@@ -176,6 +183,7 @@ let loop = GameLoop({  // create the main game loop
         let level = levelsManager.getLevel(game.currentLevel);
 
         if (!level) return
+        //Control game states and controls
         if (keyPressed('space') || gamepadPressed('south')) {
             if (game.state === states.gameOver) {
                 game.state = states.playing;
@@ -206,7 +214,7 @@ let loop = GameLoop({  // create the main game loop
                 level.sx = 0;
             }
         }
-
+        //If the player reach the end of the level go to next level or end game
         if (game.player.sprite.x > (level.width * level.tilewidth - 50)
             && game.state == states.playing) {
             game.state = states.win;

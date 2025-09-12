@@ -27,7 +27,7 @@ Modern Web Browser with HTML 5 capacities. No External dependecies requires.
 ### Installation and Setup
 
 1. Download or Clone this repository.
-2. Open index.html or store it on a Web Server.
+2. Open index.html on a Web Server.
 
 All the Assets and code must be on the current directories to work Properly.
 
